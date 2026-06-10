@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API Connection</title>
+</head>
+<body>
+    <h1>Testing API Connection</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            try {
+                const response = await fetch('http://127.0.0.1:5001/api/leaderboard');
+                const data = await response.json();
+                document.getElementById('result').innerHTML = 
+                    '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - Peer-to-Peer Skill Bartering Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f0ff 0%, #ffffff 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f0e6ff;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9b59b6;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8e44ad;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #9b59b6;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: #9b59b6;
+            border: 2px solid #9b59b6 !important;
+        }
+
+        .btn-login:hover {
+            background: #9b59b6;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 80px auto 0;
+            padding: 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 50px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            color: #9b59b6;
+            margin-bottom: 10px;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .stat-card p {
+            color: #666;
+            margin: 0;
+        }
+
+        /* Features Grid */
+        .features {
+            padding: 60px 0;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(155, 89, 182, 0.15);
+        }
+
+        .feature-item i {
+            font-size: 3rem;
+            color: #9b59b6;
+            margin-bottom: 20px;
+        }
+
+        .feature-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .feature-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Auth Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #9b59b6;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #9b59b6;
+            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+
+        .switch-auth {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .switch-auth a {
+            color: #9b59b6;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-container {
+            display: none;
+        }
+
+        .dashboard-container.active {
+            display: block;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            left: -280px;
+            top: 80px;
+            height: calc(100vh - 80px);
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0e6ff;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .user-details h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            color: #9b59b6;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            padding: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .menu-item:hover {
+            background: #f5f0ff;
+            color: #9b59b6;
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+
+        .menu-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 0;
+            padding: 30px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-open {
+            margin-left: 280px;
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            position: fixed;
+            top: 100px;
+            left: 20px;
+            background: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger:hover {
+            background: #9b59b6;
+            color: white;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(155, 89, 182, 0.1);
+        }
+
+        .card h3 {
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Skills Tags */
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .skill-tag {
+            background: #f5f0ff;
+            color: #9b59b6;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #9b59b6;
+        }
+
+        .search-bar button {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* User Card */
+        .user-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(155, 89, 182, 0.1);
+        }
+
+        .user-info-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-avatar-card {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-details-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .user-details-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .btn-swap {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-swap:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Credit Display */
+        .credit-display {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .credit-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        /* Table */
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .transaction-table th,
+        .transaction-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0e6ff;
+        }
+
+        .transaction-table th {
+            color: #9b59b6;
+            font-weight: 600;
+        }
+
+        /* Star Rating */
+        .stars {
+            display: flex;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .stars i {
+            font-size: 1.5rem;
+            color: #ddd;
+            transition: color 0.3s ease;
+        }
+
+        .stars i:hover,
+        .stars i.active {
+            color: #ffc107;
+        }
+
+        /* Leaderboard */
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background: #f9f5ff;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .rank {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Notification Bell */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            width: 350px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification-dropdown.show {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0e6ff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .notification-item:hover {
+            background: #f5f0ff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content.sidebar-open {
+                margin-left: 0;
+            }
+            
+            .sidebar {
+                width: 100%;
+                left: -100%;
+            }
+        }
+
+        /* Loading Animation */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #9b59b6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-handshake"></i>
+            <h1>SkillSwap</h1>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <button class="btn-login" onclick="showLoginModal()">Login</button>
+            <button class="btn-register" onclick="showRegisterModal()">Register</button>
+        </div>
+        <div class="nav-links" id="navLinksAuth" style="display: none;">
+            <div class="notification-bell" onclick="toggleNotifications()">
+                <i class="fas fa-bell" style="font-size: 1.5rem; color: #9b59b6;"></i>
+                <span class="notification-badge" id="notificationBadge">0</span>
+            </div>
+            <span id="userName" style="color: #9b59b6; font-weight: 600;"></span>
+            <button class="btn-login" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Notification Dropdown -->
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div style="padding: 15px; border-bottom: 1px solid #f0e6ff; font-weight: 600;">Notifications</div>
+        <div id="notificationList"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="mainContainer">
+        <!-- Hero Section -->
+        <div id="heroSection">
+            <div class="hero">
+                <h1>Exchange Skills, Not Money</h1>
+                <p>Join thousands of students learning and teaching skills through our credit-based bartering system</p>
+                <button class="btn-register" onclick="showRegisterModal()" style="padding: 15px 40px; font-size: 1.1rem;">Get Started Free</button>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <i class="fas fa-users"></i>
+                        <h3>500+</h3>
+                        <p>Active Students</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h3>1,000+</h3>
+                        <p>Skills Swapped</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star"></i>
+                        <h3>4.8</h3>
+                        <p>Average Rating</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features">
+                <h2>How SkillSwap Works</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-user-plus"></i>
+                        <h3>Create Profile</h3>
+                        <p>List skills you can teach and what you want to learn</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-search"></i>
+                        <h3>Find Matches</h3>
+                        <p>Search for peers with complementary skills</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-handshake"></i>
+                        <h3>Send Swap Requests</h3>
+                        <p>Propose skill exchanges and earn credits</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Track Progress</h3>
+                        <p>Monitor credits, ratings, and swap history</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Container -->
+        <div class="dashboard-container" id="dashboardContainer">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="dashboard-wrapper">
+                <!-- Sidebar -->
+                <div class="sidebar" id="sidebar">
+                    <div class="sidebar-header">
+                        <div class="user-info">
+                            <div class="user-avatar" id="userAvatar">AJ</div>
+                            <div class="user-details">
+                                <h4 id="sidebarUserName">Alice Johnson</h4>
+                                <p id="sidebarUserCredits">15 credits</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-menu">
+                        <div class="menu-item active" onclick="showSection('profile')">
+                            <i class="fas fa-user"></i>
+                            <span>User Profile</span>
+                        </div>
+                        <div class="menu-item" onclick="showSection('skill-profile')">
+                            <i class="fas fa-tasks"></i>
+                            <span>Skill Profile</span>
+                        </div>
+                        <div class="menu-item" onclick="showSection('search')">
+                            <i class="fas fa-search"></i>
+                            <span>Search & Filter</span>
+                        </div>
+                        <div class="menu-item" onclick="showSection('requests')">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Swap Requests</span>
+                        </div>
+                        <div class="menu-item" onclick="showSection('credit-balance')">
+                            <i class="fas fa-coins"></i>
+                            <span>Credit Balance</span>
+                        </div>
+                        <div class="menu-item" onclick="showSection('transactions')">
+                            <i class="fas fa-history"></i>
+                            <span>Transaction History</span>
+                        </div>
+                        <div class="menu-item" onclick="showSection('ratings')">
+                            <i class="fas fa-star"></i>
+                            <span>Rating System</span>
+                        </div>
+                        <div class="menu-item" onclick="showSection('leaderboard')">
+                            <i class="fas fa-trophy"></i>
+                            <span>Leaderboard</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="main-content" id="mainContent">
+                    <!-- User Profile Section -->
+                    <div class="content-section" id="profile-section">
+                        <div class="card">
+                            <h3><i class="fas fa-user-circle"></i> My Profile</h3>
+                            <div id="userProfileDetails"></div>
+                        </div>
+                    </div>
+
+                    <!-- Skill Profile Section -->
+                    <div class="content-section" id="skill-profile-section">
+                        <div class="card">
+                            <h3><i class="fas fa-tasks"></i> Create / Edit Skill Profile</h3>
+                            <form id="skillProfileForm">
+                                <div class="form-group">
+                                    <label>Skills I Can Teach (comma-separated)</label>
+                                    <input type="text" id="skillsOffer" placeholder="e.g., Python, JavaScript, Design">
+                                </div>
+                                <div class="form-group">
+                                    <label>Skills I Want to Learn (comma-separated)</label>
+                                    <input type="text" id="skillsWant" placeholder="e.g., Photoshop, Public Speaking">
+                                </div>
+                                <div class="form-group">
+                                    <label>Experience Level</label>
+                                    <select id="experienceLevel">
+                                        <option>Beginner</option>
+                                        <option>Intermediate</option>
+                                        <option>Advanced</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Bio</label>
+                                    <textarea id="bio" rows="3" placeholder="Tell others about yourself..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Availability</label>
+                                    <select id="availability">
+                                        <option>Weekdays</option>
+                                        <option>Weekends</option>
+                                        <option>Evenings</option>
+                                        <option>Flexible</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn-primary">Save Skill Profile</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Search Section -->
+                    <div class="content-section" id="search-section">
+                        <div class="card">
+                            <h3><i class="fas fa-search"></i> Find Skill Partners</h3>
+                            <div class="search-bar">
+                                <input type="text" id="searchInput" placeholder="Search by skill...">
+                                <select id="categoryFilter">
+                                    <option>All Categories</option>
+                                    <option>Programming</option>
+                                    <option>Design</option>
+                                    <option>Business</option>
+                                    <option>Language</option>
+                                </select>
+                                <select id="experienceFilter">
+                                    <option>All Levels</option>
+                                    <option>Beginner</option>
+                                    <option>Intermediate</option>
+                                    <option>Advanced</option>
+                                </select>
+                                <button onclick="searchUsers()">Search</button>
+                            </div>
+                            <div id="searchResults"></div>
+                        </div>
+                    </div>
+
+                    <!-- Swap Requests Section -->
+                    <div class="content-section" id="requests-section">
+                        <div class="card">
+                            <h3><i class="fas fa-exchange-alt"></i> Skill Swap Requests</h3>
+                            <div id="swapRequestsList"></div>
+                        </div>
+                    </div>
+
+                    <!-- Credit Balance Section -->
+                    <div class="content-section" id="credit-balance-section">
+                        <div class="credit-display">
+                            <i class="fas fa-coins" style="font-size: 2rem;"></i>
+                            <div class="credit-amount" id="creditAmount">0</div>
+                            <p>Available Credits</p>
+                        </div>
+                        <div class="card">
+                            <h3><i class="fas fa-chart-line"></i> Learning Statistics</h3>
+                            <div id="statsContainer"></div>
+                        </div>
+                    </div>
+
+                    <!-- Transactions Section -->
+                    <div class="content-section" id="transactions-section">
+                        <div class="card">
+                            <h3><i class="fas fa-history"></i> Transaction History</h3>
+                            <div id="transactionsList"></div>
+                        </div>
+                    </div>
+
+                    <!-- Ratings Section -->
+                    <div class="content-section" id="ratings-section">
+                        <div class="card">
+                            <h3><i class="fas fa-star"></i> Rate Your Swap Partners</h3>
+                            <div id="ratingsList"></div>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard Section -->
+                    <div class="content-section" id="leaderboard-section">
+                        <div class="card">
+                            <h3><i class="fas fa-trophy"></i> Top SkillSwap Users</h3>
+                            <div id="leaderboardList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeLoginModal()">&times;</span>
+            <h2>Welcome Back!</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <div class="switch-auth">
+                Don't have an account? <a onclick="switchToRegister()">Register here</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeRegisterModal()">&times;</span>
+            <h2>Create Account</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <input type="text" id="regDepartment" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Register</button>
+            </form>
+            <div class="switch-auth">
+                Already have an account? <a onclick="switchToLogin()">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_URL = 'http://localhost:5000/api';
+        let currentUser = null;
+        let notifications = [];
+
+        // ==================== AUTHENTICATION FUNCTIONS ====================
+
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+
+        function showRegisterModal() {
+            document.getElementById('registerModal').classList.add('active');
+        }
+
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.remove('active');
+        }
+
+        function switchToRegister() {
+            closeLoginModal();
+            showRegisterModal();
+        }
+
+        function switchToLogin() {
+            closeRegisterModal();
+            showLoginModal();
+        }
+
+        // Register Form Submit
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const department = document.getElementById('regDepartment').value;
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, department, password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Registration successful! Please login.');
+                    closeRegisterModal();
+                    showLoginModal();
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+
+        // Login Form Submit
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentUser = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    closeLoginModal();
+                    showDashboard();
+                } else {
+                    alert(data.error || 'Login failed');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            document.getElementById('navLinks').style.display = 'flex';
+            document.getElementById('navLinksAuth').style.display = 'none';
+            document.getElementById('dashboardContainer').classList.remove('active');
+            document.getElementById('heroSection').style.display = 'block';
+        }
+
+        function showDashboard() {
+            document.getElementById('navLinks').style.display = 'none';
+            document.getElementById('navLinksAuth').style.display = 'flex';
+            document.getElementById('heroSection').style.display = 'none';
+            document.getElementById('dashboardContainer').classList.add('active');
+            document.getElementById('userName').innerText = currentUser.name;
+            document.getElementById('sidebarUserName').innerText = currentUser.name;
+            document.getElementById('sidebarUserCredits').innerText = currentUser.credits + ' credits';
+            document.getElementById('userAvatar').innerText = currentUser.name.charAt(0) + (currentUser.name.split(' ')[1]?.charAt(0) || '');
+            
+            loadUserProfile();
+            loadCreditBalance();
+            loadSwapRequests();
+            loadTransactions();
+            loadLeaderboard();
+            loadNotifications();
+        }
+
+        // Check for stored user on load
+        window.onload = () => {
+            const storedUser = localStorage.getItem('currentUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                showDashboard();
+            }
+        };
+
+        // ==================== DASHBOARD FUNCTIONS ====================
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('open');
+            mainContent.classList.toggle('sidebar-open');
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            // Show selected section
+            document.getElementById(`${sectionName}-section`).classList.add('active');
+            
+            // Update active menu item
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.menu-item').classList.add('active');
+            
+            // Load section data
+            switch(sectionName) {
+                case 'profile':
+                    loadUserProfile();
+                    break;
+                case 'credit-balance':
+                    loadCreditBalance();
+                    break;
+                case 'requests':
+                    loadSwapRequests();
+                    break;
+                case 'transactions':
+                    loadTransactions();
+                    break;
+                case 'leaderboard':
+                    loadLeaderboard();
+                    break;
+                case 'ratings':
+                    loadRatings();
+                    break;
+            }
+        }
+
+        async function loadUserProfile() {
+            try {
+                const response = await fetch(`${API_URL}/users/${currentUser.user_id}`);
+                const user = await response.json();
+                
+                const profileHtml = `
+                    <div style="display: grid; gap: 20px;">
+                        <div><strong>Name:</strong> ${user.name}</div>
+                        <div><strong>Email:</strong> ${user.email}</div>
+                        <div><strong>Department:</strong> ${user.department || 'Not specified'}</div>
+                        <div><strong>Credits:</strong> ${user.credits}</div>
+                        <div><strong>Average Rating:</strong> ${user.rating_avg || 0} ★</div>
+                        <div><strong>Total Swaps:</strong> ${user.total_swaps || 0}</div>
+                        <div>
+                            <strong>Skills I Teach:</strong>
+                            <div class="skills-tags">
+                                ${(user.skills_offer || []).map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <strong>Skills I Want to Learn:</strong>
+                            <div class="skills-tags">
+                                ${(user.skills_want || []).map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div><strong>Bio:</strong> ${user.bio || 'No bio yet'}</div>
+                        <div><strong>Experience Level:</strong> ${user.experience_level || 'Beginner'}</div>
+                        <div><strong>Availability:</strong> ${user.availability || 'Flexible'}</div>
+                    </div>
+                `;
+                document.getElementById('userProfileDetails').innerHTML = profileHtml;
+                
+                // Populate skill profile form
+                document.getElementById('skillsOffer').value = (user.skills_offer || []).join(', ');
+                document.getElementById('skillsWant').value = (user.skills_want || []).join(', ');
+                document.getElementById('experienceLevel').value = user.experience_level || 'Beginner';
+                document.getElementById('bio').value = user.bio || '';
+                document.getElementById('availability').value = user.availability || 'Flexible';
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        // Skill Profile Form Submit
+        document.getElementById('skillProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const skillsOffer = document.getElementById('skillsOffer').value.split(',').map(s => s.trim());
+            const skillsWant = document.getElementById('skillsWant').value.split(',').map(s => s.trim());
+            const experienceLevel = document.getElementById('experienceLevel').value;
+            const bio = document.getElementById('bio').value;
+            const availability = document.getElementById('availability').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/users/${currentUser.user_id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ skills_offer: skillsOffer, skills_want: skillsWant, experience_level: experienceLevel, bio, availability })
+                });
+                if (response.ok) {
+                    alert('Skill profile updated successfully!');
+                    loadUserProfile();
+                } else {
+                    alert('Update failed');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+
+        async function searchUsers() {
+            const skill = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            const experience = document.getElementById('experienceFilter').value;
+            
+            let url = `${API_URL}/search?skill=${encodeURIComponent(skill)}`;
+            if (category !== 'All Categories') url += `&category=${encodeURIComponent(category)}`;
+            if (experience !== 'All Levels') url += `&experience=${encodeURIComponent(experience)}`;
+            
+            try {
+                const response = await fetch(url);
+                const users = await response.json();
+                
+                const filteredUsers = users.filter(u => u.user_id !== currentUser.user_id);
+                
+                if (filteredUsers.length === 0) {
+                    document.getElementById('searchResults').innerHTML = '<p>No users found.</p>';
+                    return;
+                }
+                
+                let html = '';
+                for (const user of filteredUsers) {
+                    html += `
+                        <div class="user-card">
+                            <div class="user-info-card">
+                                <div class="user-avatar-card">${user.name.charAt(0)}${user.name.split(' ')[1]?.charAt(0) || ''}</div>
+                                <div class="user-details-card">
+                                    <h4>${user.name}</h4>
+                                    <p>${user.department || 'Student'} • ★ ${user.rating_avg || 0}</p>
+                                    <div class="skills-tags">
+                                        ${(user.skills_offer || []).slice(0, 3).map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-swap" onclick="showSwapRequestModal('${user.user_id}', '${user.name}')">Send Swap Request</button>
+                        </div>
+                    `;
+                }
+                document.getElementById('searchResults').innerHTML = html;
+            } catch (error) {
+                console.error('Error searching users:', error);
+            }
+        }
+
+        function showSwapRequestModal(receiverId, receiverName) {
+            const skillOffered = prompt('What skill will you teach?');
+            const skillRequested = prompt('What skill do you want to learn?');
+            const creditsProposed = parseInt(prompt('How many credits for this swap?', '5'));
+            
+            if (skillOffered && skillRequested && creditsProposed) {
+                sendSwapRequest(receiverId, receiverName, skillOffered, skillRequested, creditsProposed);
+            }
+        }
+
+        async function sendSwapRequest(receiverId, receiverName, skillOffered, skillRequested, creditsProposed) {
+            try {
+                const response = await fetch(`${API_URL}/swap-request`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        requester_id: currentUser.user_id,
+                        requester_name: currentUser.name,
+                        receiver_id: receiverId,
+                        receiver_name: receiverName,
+                        skill_offered: skillOffered,
+                        skill_requested: skillRequested,
+                        credits_proposed: creditsProposed,
+                        message: `I'd like to swap ${skillOffered} for ${skillRequested}`
+                    })
+                });
+                if (response.ok) {
+                    alert('Swap request sent successfully!');
+                    loadSwapRequests();
+                    loadNotifications();
+                } else {
+                    alert('Failed to send request');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function loadSwapRequests() {
+            try {
+                const response = await fetch(`${API_URL}/swap-requests/${currentUser.user_id}`);
+                const requests = await response.json();
+                
+                const pendingRequests = requests.filter(r => r.status === 'pending' && r.receiver_id === currentUser.user_id);
+                const sentRequests = requests.filter(r => r.status === 'pending' && r.requester_id === currentUser.user_id);
+                const otherRequests = requests.filter(r => r.status !== 'pending');
+                
+                let html = '';
+                
+                if (pendingRequests.length > 0) {
+                    html += '<h4>Pending Requests (Incoming)</h4>';
+                    for (const req of pendingRequests) {
+                        html += `
+                            <div class="user-card">
+                                <div>
+                                    <strong>${req.requester_name}</strong> wants to learn ${req.skill_requested} in exchange for ${req.skill_offered}
+                                    <br>Credits: ${req.credits_proposed}
+                                </div>
+                                <div>
+                                    <button class="btn-swap" onclick="acceptRequest('${req.request_id}')" style="background: #27ae60;">Accept</button>
+                                    <button class="btn-swap" onclick="declineRequest('${req.request_id}')" style="background: #e74c3c;">Decline</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                if (sentRequests.length > 0) {
+                    html += '<h4>Pending Requests (Sent)</h4>';
+                    for (const req of sentRequests) {
+                        html += `
+                            <div class="user-card">
+                                <div>
+                                    To <strong>${req.receiver_name}</strong>: ${req.skill_offered} ↔ ${req.skill_requested}
+                                    <br>Status: <span style="color: #f39c12;">Pending</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                if (otherRequests.length > 0) {
+                    html += '<h4>Completed/Declined Requests</h4>';
+                    for (const req of otherRequests) {
+                        const statusColor = req.status === 'completed' ? '#27ae60' : '#e74c3c';
+                        html += `
+                            <div class="user-card">
+                                <div>
+                                    ${req.requester_name} ↔ ${req.receiver_name}
+                                    <br>${req.skill_offered} ↔ ${req.skill_requested}
+                                    <br>Status: <span style="color: ${statusColor};">${req.status}</span>
+                                </div>
+                                ${req.status === 'accepted' ? `<button class="btn-swap" onclick="completeRequest('${req.request_id}')">Complete Swap</button>` : ''}
+                            </div>
+                        `;
+                    }
+                }
+                
+                if (html === '') {
+                    html = '<p>No swap requests yet.</p>';
+                }
+                
+                document.getElementById('swapRequestsList').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading swap requests:', error);
+            }
+        }
+
+        async function acceptRequest(requestId) {
+            try {
+                const response = await fetch(`${API_URL}/swap-request/${requestId}/accept`, {
+                    method: 'PUT'
+                });
+                if (response.ok) {
+                    alert('Request accepted!');
+                    loadSwapRequests();
+                    loadNotifications();
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function declineRequest(requestId) {
+            try {
+                const response = await fetch(`${API_URL}/swap-request/${requestId}/decline`, {
+                    method: 'PUT'
+                });
+                if (response.ok) {
+                    alert('Request declined');
+                    loadSwapRequests();
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function completeRequest(requestId) {
+            try {
+                const response = await fetch(`${API_URL}/swap-request/${requestId}/complete`, {
+                    method: 'PUT'
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Swap completed! Credits transferred.');
+                    loadSwapRequests();
+                    loadCreditBalance();
+                    loadTransactions();
+                    currentUser.credits = data.teacher_credits || currentUser.credits;
+                    document.getElementById('sidebarUserCredits').innerText = currentUser.credits + ' credits';
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function loadCreditBalance() {
+            try {
+                const response = await fetch(`${API_URL}/users/${currentUser.user_id}`);
+                const user = await response.json();
+                document.getElementById('creditAmount').innerText = user.credits;
+                
+                const statsHtml = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div style="text-align: center; padding: 20px; background: #f5f0ff; border-radius: 15px;">
+                            <h4>Total Credits Earned</h4>
+                            <h2 style="color: #9b59b6;">${user.credits}</h2>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: #f5f0ff; border-radius: 15px;">
+                            <h4>Skills Taught</h4>
+                            <h2 style="color: #9b59b6;">${(user.skills_offer || []).length}</h2>
+                        </div>
+                        <div style="text-align: center; padding: 20px; background: #f5f0ff; border-radius: 15px;">
+                            <h4>Total Swaps</h4>
+                            <h2 style="color: #9b59b6;">${user.total_swaps || 0}</h2>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('statsContainer').innerHTML = statsHtml;
+            } catch (error) {
+                console.error('Error loading credit balance:', error);
+            }
+        }
+
+        async function loadTransactions() {
+            try {
+                const response = await fetch(`${API_URL}/transactions/${currentUser.user_id}`);
+                const transactions = await response.json();
+                
+                if (transactions.length === 0) {
+                    document.getElementById('transactionsList').innerHTML = '<p>No transactions yet.</p>';
+                    return;
+                }
+                
+                let html = `
+                    <table class="transaction-table">
+                        <thead>
+                            <tr><th>Skill</th><th>Credits</th><th>Date</th></tr>
+                        </thead>
+                        <tbody>
+                `;
+                for (const txn of transactions) {
+                    const isTeacher = txn.teacher_id === currentUser.user_id;
+                    html += `
+                        <tr>
+                            <td>${txn.skill_taught}</td>
+                            <td style="color: ${isTeacher ? '#27ae60' : '#e74c3c'}">${isTeacher ? '+' : '-'}${txn.credits_exchanged}</td>
+                            <td>${new Date(txn.completed_at).toLocaleDateString()}</td>
+                        </tr>
+                    `;
+                }
+                html += '</tbody></table>';
+                document.getElementById('transactionsList').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+            }
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch(`${API_URL}/leaderboard`);
+                const leaders = await response.json();
+                
+                let html = '';
+                for (const leader of leaders) {
+                    const medal = leader.rank === 1 ? '🥇' : leader.rank === 2 ? '🥈' : leader.rank === 3 ? '🥉' : `${leader.rank}`;
+                    html += `
+                        <div class="leaderboard-item">
+                            <div class="rank">${medal}</div>
+                            <div style="flex: 1;">
+                                <strong>${leader.name}</strong>
+                                <div style="font-size: 0.9rem; color: #666;">${leader.skills_count} skills • ★ ${leader.rating_avg || 0}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div><strong>${leader.credits}</strong> credits</div>
+                                <div style="font-size: 0.8rem; color: #666;">${leader.total_swaps || 0} swaps</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                document.getElementById('leaderboardList').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+            }
+        }
+
+        async function loadRatings() {
+            try {
+                const response = await fetch(`${API_URL}/swap-requests/${currentUser.user_id}`);
+                const requests = await response.json();
+                const completedRequests = requests.filter(r => r.status === 'completed');
+                
+                if (completedRequests.length === 0) {
+                    document.getElementById('ratingsList').innerHTML = '<p>No completed swaps to rate yet.</p>';
+                    return;
+                }
+                
+                let html = '';
+                for (const req of completedRequests) {
+                    const partnerName = req.requester_id === currentUser.user_id ? req.receiver_name : req.requester_name;
+                    html += `
+                        <div class="user-card">
+                            <div>
+                                <strong>${partnerName}</strong> - ${req.skill_offered} ↔ ${req.skill_requested}
+                            </div>
+                            <div>
+                                <div class="stars" data-request="${req.request_id}" data-reviewed="${req.requester_id === currentUser.user_id ? req.receiver_id : req.requester_id}">
+                                    <i class="far fa-star" data-rating="1"></i>
+                                    <i class="far fa-star" data-rating="2"></i>
+                                    <i class="far fa-star" data-rating="3"></i>
+                                    <i class="far fa-star" data-rating="4"></i>
+                                    <i class="far fa-star" data-rating="5"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                document.getElementById('ratingsList').innerHTML = html;
+                
+                // Add star rating handlers
+                document.querySelectorAll('.stars').forEach(starContainer => {
+                    const stars = starContainer.querySelectorAll('i');
+                    stars.forEach(star => {
+                        star.addEventListener('click', async () => {
+                            const rating = parseInt(star.dataset.rating);
+                            const requestId = starContainer.dataset.request;
+                            const reviewedId = starContainer.dataset.reviewed;
+                            
+                            try {
+                                const response = await fetch(`${API_URL}/rating`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        swap_request_id: requestId,
+                                        reviewer_id: currentUser.user_id,
+                                        reviewed_id: reviewedId,
+                                        rating: rating,
+                                        comment: ''
+                                    })
+                                });
+                                if (response.ok) {
+                                    alert(`Rated ${rating} stars!`);
+                                    // Update star display
+                                    stars.forEach((s, i) => {
+                                        if (i < rating) {
+                                            s.className = 'fas fa-star';
+                                            s.style.color = '#ffc107';
+                                        } else {
+                                            s.className = 'far fa-star';
+                                        }
+                                    });
+                                }
+                            } catch (error) {
+                                alert('Error submitting rating');
+                            }
+                        });
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading ratings:', error);
+            }
+        }
+
+        async function loadNotifications() {
+            try {
+                const response = await fetch(`${API_URL}/notifications/${currentUser.user_id}`);
+                notifications = await response.json();
+                document.getElementById('notificationBadge').innerText = notifications.length;
+                
+                let html = '';
+                for (const notif of notifications) {
+                    html += `
+                        <div class="notification-item" onclick="handleNotification('${notif.id}', '${notif.type}')">
+                            <strong>${notif.type === 'new_request' ? 'New Request' : 'Request Accepted'}</strong>
+                            <div style="font-size: 0.9rem; color: #666;">${notif.message}</div>
+                            <div style="font-size: 0.8rem; color: #999;">${new Date(notif.created_at).toLocaleString()}</div>
+                        </div>
+                    `;
+                }
+                if (html === '') {
+                    html = '<div style="padding: 15px; text-align: center; color: #666;">No new notifications</div>';
+                }
+                document.getElementById('notificationList').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('show');
+            setTimeout(() => {
+                document.addEventListener('click', function closeDropdown(e) {
+                    if (!dropdown.contains(e.target) && !e.target.closest('.notification-bell')) {
+                        dropdown.classList.remove('show');
+                        document.removeEventListener('click', closeDropdown);
+                    }
+                });
+            }, 100);
+        }
+
+        function handleNotification(requestId, type) {
+            if (type === 'new_request') {
+                showSection('requests');
+                toggleSidebar();
+            }
+            document.getElementById('notificationDropdown').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

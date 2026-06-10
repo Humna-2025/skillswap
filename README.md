@@ -1,2 +1,0 @@
-# skillswap
-full stack
