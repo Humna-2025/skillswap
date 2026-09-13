@@ -1151,11 +1151,7 @@ University Software / Database / Full-Stack Development Project
 
 **Humna Nawaz**
 
-### GitHub
 
-[github.com/Humna-2025](https://github.com/Humna-2025)
-
----
 
 # 📄 License
 
